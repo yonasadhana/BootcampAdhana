@@ -115,7 +115,7 @@ public class Main {
                     break;
 
                 case 4:
-                    System.out.println("Thank you for using the Financial Calculator! More advanced application to come. until then ciao");
+                    System.out.println("Thank you for using the Financial Calculator! More advanced features are coming soon. Until then, ciao!");
                     keepRunning = false;
                     break;
 
