@@ -42,14 +42,34 @@ Total interest: $154139.29
 
 **Screenshots**
 * Display Menu
+
+
 ![img.png](img.png)
+
+
+
 * Mortgage Calculator
+
 ![img_1.png](img_1.png)
 * Future Value Calculator
+
+
 ![img_2.png](img_2.png)
+
+
+
 * Present Value of Annuity Calculator
+
+
+
 ![img_3.png](img_3.png)
+
+
+
 * Exit Program
+
+
+
 ![img_4.png](img_4.png)
 
 **Interesting Code**
