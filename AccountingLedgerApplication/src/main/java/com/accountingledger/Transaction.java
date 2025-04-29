@@ -41,8 +41,6 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return String.format("%s|%s|%s|%s|%.2f", date.toString(),
-                time.toString(),
-                description, vendor, amount);
+        return String.format("%s|%s|%s|%s|%.2f", date.toString(), time.toString(), description, vendor, amount);
     }
 }
