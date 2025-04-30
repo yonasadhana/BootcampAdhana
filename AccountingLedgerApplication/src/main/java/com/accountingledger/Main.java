@@ -1,58 +1,58 @@
 package com.accountingledger;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Main {
+    private static Scanner scanner = new Scanner(System.in);
+    private static ArrayList<Transaction> transactions;
+
     public static void main(String[] args) {
-        try {
-            // Get the current date and time
-            LocalDate date = LocalDate.now();
-            LocalTime time = LocalTime.now();
+        System.out.println("Welcome to the Accounting Ledger Application!");
+        loadTransactionsData();
+        displayHomeScreen();
+    }
 
-            // Example 1: Add a deposit
-            String description1 = "Client payment";
-            String vendor1 = "Jo's Consulting";
-            double amount1 = 1500.00;
+    private static void loadTransactionsData() {
+        transactions = FileManager.loadTransactions();
+        System.out.println("Transactions loaded: " + transactions.size());
+    }
 
-            Transaction transaction1 = new Transaction(date, time, description1, vendor1, amount1);
-            FileManager.saveTransaction(transaction1);
+    private static void displayHomeScreen() {
+        System.out.println("\n******************* Home Screen *************");
+        System.out.println("D) Add Deposit");
+        System.out.println("P) Make Payment (Debit)");
+        System.out.println("L) Ledger");
+        System.out.println("X) Exit");
+        System.out.println("Press X to exit the application.");
 
-            // Example 2: Add a payment
-            String description2 = "Office supplies";
-            String vendor2 = "UPS";
-            double amount2 = -85.47;
 
-            Transaction transaction2 = new Transaction(date, time, description2, vendor2, amount2);
-            FileManager.saveTransaction(transaction2);
-
-            // Example 3: Another deposit
-            String description3 = "Monthly service fee";
-            String vendor3 = "PB gas satiton";
-            double amount3 = 275.00;
-
-            Transaction transaction3 = new Transaction(date, time, description3, vendor3, amount3);
-            FileManager.saveTransaction(transaction3);
-
-            // Example 4: Another payment
-            String description4 = "Software subscription";
-            String vendor4 = "Adobe";
-            double amount4 = -59.99;
-
-            Transaction transaction4 = new Transaction(date, time, description4, vendor4, amount4);
-            FileManager.saveTransaction(transaction4);
-
-            // Example 5: One more deposit
-            String description5 = "Product sale";
-            String vendor5 = "best buy";
-            double amount5 = 329.50;
-
-            Transaction transaction5 = new Transaction(date, time, description5, vendor5, amount5);
-            FileManager.saveTransaction(transaction5);
-
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            e.printStackTrace();
+        while (true) {
+            System.out.print("Please select an option: ");
+            String choice = scanner.nextLine();
+            if (choice != null && choice.toUpperCase().equals("X")) {
+                System.out.println("Thank you for using the Accounting Ledger Application. Goodbye!");
+                break;
+            } else {
+                System.out.println("Please press X to exit.");
+            }
         }
+    }
+
+
+    private static String limitString(String str, int maxLength) {
+        if (str == null) {
+            return "";
+        }
+
+        if (str.length() <= maxLength) {
+            return str;
+        } else {
+            return str.substring(0, maxLength - 3) + "...";
+        }
+    }
+
+    private interface TransactionFilter {
+        boolean match(Transaction transaction);
     }
 }
