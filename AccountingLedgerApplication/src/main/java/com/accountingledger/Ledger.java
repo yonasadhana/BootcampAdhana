@@ -47,5 +47,6 @@ public class Ledger {
     public void addTransaction(Transaction transaction) {
         transactions.add(transaction);
         FileManager.saveTransaction(transaction);
+
     }
 }
