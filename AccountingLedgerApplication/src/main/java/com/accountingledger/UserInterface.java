@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 /**
  * UserInterface Class
- * <p>
+ *
  * This class manages all user interactions for the Accounting Ledger application.
  * It provides menu displays, handles user input, and coordinates with the Ledger
  * class to perform financial transactions and generate reports.
@@ -23,7 +23,7 @@ public class UserInterface {
 
     /**
      * HOME SCREEN
-     * <p>
+     *
      * Displays the main menu of the application and processes user selections.
      * This is the entry point of the application where users can:
      * - Add deposits
@@ -54,10 +54,10 @@ public class UserInterface {
                         displayLedgerScreen();
                         break;
                     case "X":
-                        isRunning = false;
                         System.out.println("╔═════════════════════════════════════════╗\n" + "║      THANK YOU FOR USING THE            ║\n" + "║     ACCOUNTING LEDGER APPLICATION       ║\n" + "╚═════════════════════════════════════════╝");
-                        // Program terminates here - no need to show ledger menu
-                        return; // Added return statement to exit the method immediately
+                        // Exit the application completely
+                        System.exit(0); // This will terminate the program immediately
+                        break;
                     default:
                         System.out.println("! Invalid option. Please enter D, P, L, or X.");
                 }
@@ -69,7 +69,7 @@ public class UserInterface {
 
     /**
      * TRANSACTION ENTRY: ADD DEPOSIT
-     * <p>
+     *
      * Collects information from the user to create a new deposit transaction.
      * Gathers description, vendor, and positive amount from the user.
      * Adds the transaction to the ledger with current date and time.
@@ -114,7 +114,7 @@ public class UserInterface {
 
     /**
      * TRANSACTION ENTRY: MAKE PAYMENT
-     * <p>
+     *
      * Collects information from the user to create a new payment transaction.
      * Gathers description, vendor, and positive amount from the user.
      * Converts the amount to negative before storing.
@@ -162,7 +162,7 @@ public class UserInterface {
 
     /**
      * LEDGER MENU
-     * <p>
+     *
      * Displays the ledger options menu and processes user selections.
      * Provides access to different views of transaction data:
      * - All transactions
@@ -210,7 +210,7 @@ public class UserInterface {
 
     /**
      * LEDGER VIEW: ALL ENTRIES
-     * <p>
+     *
      * Displays a complete list of all financial transactions in the ledger.
      * Shows transactions in reverse chronological order (newest first).
      * Includes deposits and payments in a single view.
@@ -234,7 +234,7 @@ public class UserInterface {
 
     /**
      * LEDGER VIEW: DEPOSITS ONLY
-     * <p>
+     *
      * Displays only deposit transactions (positive amounts).
      * Shows transactions in reverse chronological order (newest first).
      * Useful for tracking income sources.
@@ -258,7 +258,7 @@ public class UserInterface {
 
     /**
      * LEDGER VIEW: PAYMENTS ONLY
-     * <p>
+     *
      * Displays only payment transactions (negative amounts).
      * Shows transactions in reverse chronological order (newest first).
      * Useful for tracking expenses.
@@ -282,7 +282,7 @@ public class UserInterface {
 
     /**
      * TRANSACTION DISPLAY HELPER
-     * <p>
+     *
      * Formats and displays a list of transactions in a tabular format.
      * Handles text wrapping for long descriptions over multiple lines.
      * Shows date, time, description, vendor, and amount in aligned columns.
@@ -294,8 +294,19 @@ public class UserInterface {
         System.out.println("   DATE      |    TIME    |             DESCRIPTION              |             VENDOR             |      AMOUNT");
         System.out.println(tableDivider);
 
-        for (int i = transactionsList.size() - 1; i >= 0; i--) {
-            Transaction item = transactionsList.get(i);
+        // Sort transactions by date in descending order (newest first)
+        transactionsList.sort((t1, t2) -> {
+            // First compare by date
+            int dateComparison = t2.getDate().compareTo(t1.getDate());
+            if (dateComparison != 0) {
+                return dateComparison;
+            }
+            // If dates are equal, compare by time
+            return t2.getTime().compareTo(t1.getTime());
+        });
+
+        // Display transactions in the sorted order
+        for (Transaction item : transactionsList) {
             String description = item.getDescription();
             String vendor = item.getVendor();
 
@@ -317,7 +328,7 @@ public class UserInterface {
 
     /**
      * REPORTS MENU
-     * <p>
+     *
      * Displays the reporting options menu and processes user selections.
      * Provides access to various financial reports:
      * - Month-to-date transactions
@@ -371,7 +382,7 @@ public class UserInterface {
 
     /**
      * REPORT: MONTH TO DATE
-     * <p>
+     *
      * Generates a financial report for the current month.
      * Shows all transactions from the beginning of the current month to today.
      * Displays transaction details and calculated totals.
@@ -395,7 +406,7 @@ public class UserInterface {
 
     /**
      * REPORT: PREVIOUS MONTH
-     * <p>
+     *
      * Generates a financial report for the previous calendar month.
      * Shows all transactions from the previous month.
      * Displays transaction details and calculated totals.
@@ -419,7 +430,7 @@ public class UserInterface {
 
     /**
      * REPORT: YEAR TO DATE
-     * <p>
+     *
      * Generates a financial report for the current year.
      * Shows all transactions from January 1st to today.
      * Displays transaction details and calculated totals.
@@ -443,7 +454,7 @@ public class UserInterface {
 
     /**
      * REPORT: PREVIOUS YEAR
-     * <p>
+     *
      * Generates a financial report for the previous calendar year.
      * Shows all transactions from the previous year.
      * Displays transaction details and calculated totals.
@@ -467,7 +478,7 @@ public class UserInterface {
 
     /**
      * SEARCH: BY VENDOR
-     * <p>
+     *
      * Allows searching for transactions by vendor name.
      * Prompts user for a vendor name to search for.
      * Displays matching transactions and calculates totals.
@@ -488,8 +499,9 @@ public class UserInterface {
         }
 
         System.out.println("\n╔═════════════════════════════════════════╗");
-        System.out.println("║    SEARCH RESULTS FOR: " + limitString(searchVendorName, 15) + "        ║");
+        System.out.println("║            SEARCH RESULTS               ║");
         System.out.println("╚═════════════════════════════════════════╝");
+        System.out.println("Vendor: " + searchVendorName);
 
         ArrayList<Transaction> searchResults = transactionLedger.searchByVendor(searchVendorName);
         double totalAmount = transactionLedger.calculateTotal(searchResults);
@@ -500,7 +512,7 @@ public class UserInterface {
 
     /**
      * TRANSACTION DISPLAY WITH TOTALS
-     * <p>
+     *
      * Displays a list of transactions with calculated totals.
      * Shows transaction details in a tabular format.
      * Adds a summary row with the net total of all transactions.
@@ -526,7 +538,7 @@ public class UserInterface {
 
     /**
      * TEXT TRUNCATION UTILITY
-     * <p>
+     *
      * Limits a string to a maximum length and adds ellipsis if needed.
      * Used primarily for displaying search headers with potentially long vendor names.
      */
@@ -544,14 +556,14 @@ public class UserInterface {
 
     /**
      * NAVIGATION: POST-TASK OPTIONS
-     * <p>
+     *
      * Displays a menu of navigation options after completing a task.
      * Different options are shown based on the task type:
      * - After deposits or payments: options to add more or return home
      * - After reports: options to view more reports or navigate to other menus
      * - After searches: options to search again or navigate to other menus
      * - After ledger views: options to view more data or return home
-     * <p>
+     *
      * Handles the user's choice and redirects to the appropriate screen.
      */
     private void showPostTaskOptions(String taskType) {
