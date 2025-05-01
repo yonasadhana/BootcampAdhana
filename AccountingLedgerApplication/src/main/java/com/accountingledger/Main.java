@@ -6,9 +6,9 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-// Part 1: Basic Structure/Main Method
+
 public class Main {
-    private static Scanner scanner = new Scanner(System.in);
+    private static Scanner scanner = new Scanner(System.in); // Part 1: Basic Structure/Main Method
     private static ArrayList<Transaction> transactions;
 
     public static void main(String[] args) {
