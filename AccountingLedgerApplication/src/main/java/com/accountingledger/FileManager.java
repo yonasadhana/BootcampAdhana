@@ -7,80 +7,83 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class FileManager {
-    private static final String filePath = "src/main/resources/transactions.csv";
+    private static final String dataFilePath = "src/main/resources/transactions.csv";
+    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public static void saveTransaction(Transaction transaction) {
-        File file = new File(filePath);
+        File dataFile = new File(dataFilePath);
 
         try {
-            File folder = file.getParentFile();
-            if (!folder.exists()) {
-                folder.mkdirs();
+            File folderPath = dataFile.getParentFile();
+            if (!folderPath.exists()) {
+                folderPath.mkdirs();
             }
 
-            boolean fileExists = file.exists();
-            boolean isEmpty = !fileExists || file.length() == 0;
+            boolean fileExists = dataFile.exists();
+            boolean isEmpty = !fileExists || dataFile.length() == 0;
 
-            FileWriter writer = new FileWriter(file, true);
+            FileWriter fileWriter = new FileWriter(dataFile, true);
 
             if (isEmpty) {
-                writer.write("date|time|description|vendor|amount\n");
+                fileWriter.write("date|time|description|vendor|amount\n");
             }
 
-            writer.write(transaction.toString() + "\n");
+            fileWriter.write(transaction.toString() + "\n");
 
-            writer.close();
+            fileWriter.close();
 
             System.out.println("Transaction saved successfully!");
 
-        } catch (IOException e) {
+        } catch (IOException ioException) {
             System.out.println("Something went wrong while saving the transaction.");
-            e.printStackTrace();
+            ioException.printStackTrace();
         }
     }
 
     public static ArrayList<Transaction> loadTransactions() {
-        ArrayList<Transaction> transactions = new ArrayList<>();
-        File file = new File(filePath);
+        ArrayList<Transaction> transactionsList = new ArrayList<>();
+        File dataFile = new File(dataFilePath);
 
         try {
             // to check if the file exists
-            if (!file.exists()) {
-                return transactions;  // Return empty list if file doesn't exist
+            if (!dataFile.exists()) {
+                return transactionsList;  // Return empty list if file doesn't exist
             }
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader fileReader = new BufferedReader(new FileReader(dataFile));
 
             // Skip the header line
-            reader.readLine();
+            fileReader.readLine();
 
-            String line;
-            while ((line = reader.readLine()) != null) {
+            String dataLine;
+            while ((dataLine = fileReader.readLine()) != null) {
                 try {
-                    String[] parts = line.split("\\|");
-                    if (parts.length == 5) {
-                        LocalDate date = LocalDate.parse(parts[0]);
-                        LocalTime time = LocalTime.parse(parts[1]);
-                        String description = parts[2];
-                        String vendor = parts[3];
-                        double amount = Double.parseDouble(parts[4]);
+                    String[] dataParts = dataLine.split("\\|");
+                    if (dataParts.length == 5) {
+                        LocalDate transactionDate = LocalDate.parse(dataParts[0]);
+                        LocalTime transactionTime = LocalTime.parse(dataParts[1]);
+                        String transactionDescription = dataParts[2];
+                        String vendorName = dataParts[3];
+                        double transactionAmount = Double.parseDouble(dataParts[4]);
 
-                        Transaction transaction = new Transaction(date, time, description, vendor, amount);
-                        transactions.add(transaction);
+                        Transaction transaction = new Transaction(transactionDate, transactionTime,
+                                transactionDescription, vendorName, transactionAmount);
+                        transactionsList.add(transaction);
                     }
-                } catch (Exception e) {
-                    System.out.println("Error parsing transaction: " + line);
+                } catch (Exception parseException) {
+                    System.out.println("Error parsing transaction: " + dataLine);
                 }
             }
-            reader.close();
+            fileReader.close();
 
-        } catch (IOException e) {
+        } catch (IOException ioException) {
             System.out.println("Error reading transactions file.");
-            e.printStackTrace();
+            ioException.printStackTrace();
         }
 
-        return transactions;
+        return transactionsList;
     }
 }

@@ -7,18 +7,18 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class UserInterface {
-    private Scanner scanner = new Scanner(System.in);
-    private Ledger ledger;
+    private Scanner inputScanner = new Scanner(System.in);
+    private Ledger transactionLedger;
 
-    public UserInterface(Ledger ledger) {
-        this.ledger = ledger;
+    public UserInterface(Ledger transactionLedger) {
+        this.transactionLedger = transactionLedger;
     }
 
     // Part 2: Home Screen and Transaction Entry
     public void displayHomeScreen() {
-        boolean running = true;
+        boolean isRunning = true;
 
-        while (running) {
+        while (isRunning) {
             System.out.println("\n*********** Home Screen ***********");
             System.out.println("D) Add Deposit");
             System.out.println("P) Make Payment (Debit)");
@@ -26,10 +26,10 @@ public class UserInterface {
             System.out.println("X) Exit");
             System.out.print("Please select an option: ");
 
-            String choice = scanner.nextLine();
+            String userChoice = inputScanner.nextLine();
 
-            if (choice != null && !choice.isEmpty()) {
-                switch (choice.toUpperCase()) {
+            if (userChoice != null && !userChoice.isEmpty()) {
+                switch (userChoice.toUpperCase()) {
                     case "D":
                         addDeposit();
                         break;
@@ -40,7 +40,7 @@ public class UserInterface {
                         displayLedgerScreen();
                         break;
                     case "X":
-                        running = false;
+                        isRunning = false;
                         System.out.println("Thank you for using the Accounting Ledger Application. Goodbye!");
                         break;
                     default:
@@ -57,28 +57,33 @@ public class UserInterface {
             System.out.println("\n*********** Add Deposit ***********");
 
             System.out.print("Description: ");
-            String description = scanner.nextLine();
+            String transactionDescription = inputScanner.nextLine();
 
             System.out.print("Vendor: ");
-            String vendor = scanner.nextLine();
+            String vendorName = inputScanner.nextLine();
 
             System.out.print("Amount: $");
-            double amount = Double.parseDouble(scanner.nextLine());
+            double transactionAmount = Double.parseDouble(inputScanner.nextLine());
 
-            if (amount <= 0) {
+            if (transactionAmount <= 0) {
                 System.out.println("Deposit amount must be positive. Transaction cancelled.");
+                showPostTaskOptions("deposit");
                 return;
             }
 
-            Transaction deposit = new Transaction(LocalDate.now(), LocalTime.now(), description, vendor, amount);
-            ledger.addTransaction(deposit);
+            Transaction depositTransaction = new Transaction(LocalDate.now(), LocalTime.now(),
+                    transactionDescription, vendorName, transactionAmount);
+            transactionLedger.addTransaction(depositTransaction);
 
             System.out.println("Deposit added successfully!");
+            showPostTaskOptions("deposit");
 
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException formatException) {
             System.out.println("Invalid amount format. Please enter a valid number.");
-        } catch (Exception e) {
-            System.out.println("Error adding deposit: " + e.getMessage());
+            showPostTaskOptions("deposit");
+        } catch (Exception generalException) {
+            System.out.println("Error adding deposit: " + generalException.getMessage());
+            showPostTaskOptions("deposit");
         }
     }
 
@@ -87,38 +92,43 @@ public class UserInterface {
             System.out.println("\n*********** Make Payment ***********");
 
             System.out.print("Description: ");
-            String description = scanner.nextLine();
+            String transactionDescription = inputScanner.nextLine();
 
             System.out.print("Vendor: ");
-            String vendor = scanner.nextLine();
+            String vendorName = inputScanner.nextLine();
 
             System.out.print("Amount: $");
-            double amount = Double.parseDouble(scanner.nextLine());
+            double transactionAmount = Double.parseDouble(inputScanner.nextLine());
 
-            if (amount <= 0) {
+            if (transactionAmount <= 0) {
                 System.out.println("Payment amount must be positive. Transaction cancelled.");
+                showPostTaskOptions("payment");
                 return;
             }
 
-            amount = -amount;
+            transactionAmount = -transactionAmount;
 
-            Transaction payment = new Transaction(LocalDate.now(), LocalTime.now(), description, vendor, amount);
-            ledger.addTransaction(payment);
+            Transaction paymentTransaction = new Transaction(LocalDate.now(), LocalTime.now(),
+                    transactionDescription, vendorName, transactionAmount);
+            transactionLedger.addTransaction(paymentTransaction);
 
             System.out.println("Payment recorded successfully!");
+            showPostTaskOptions("payment");
 
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException formatException) {
             System.out.println("Invalid amount format. Please enter a valid number.");
-        } catch (Exception e) {
-            System.out.println("Error making payment: " + e.getMessage());
+            showPostTaskOptions("payment");
+        } catch (Exception generalException) {
+            System.out.println("Error making payment: " + generalException.getMessage());
+            showPostTaskOptions("payment");
         }
     }
 
     // Part 3: Ledger Display Functions
     private void displayLedgerScreen() {
-        boolean viewingLedger = true;
+        boolean isViewingLedger = true;
 
-        while (viewingLedger) {
+        while (isViewingLedger) {
             System.out.println("\n*********** Ledger ***********");
             System.out.println("A) All Entries");
             System.out.println("D) Deposits");
@@ -127,10 +137,10 @@ public class UserInterface {
             System.out.println("H) Home");
             System.out.print("Please select an option: ");
 
-            String choice = scanner.nextLine();
+            String userChoice = inputScanner.nextLine();
 
-            if (choice != null && !choice.isEmpty()) {
-                switch (choice.toUpperCase()) {
+            if (userChoice != null && !userChoice.isEmpty()) {
+                switch (userChoice.toUpperCase()) {
                     case "A":
                         displayAllEntries();
                         break;
@@ -144,7 +154,7 @@ public class UserInterface {
                         displayReportsScreen();
                         break;
                     case "H":
-                        viewingLedger = false;
+                        isViewingLedger = false;
                         break;
                     default:
                         System.out.println("Invalid option. Please try again.");
@@ -157,72 +167,87 @@ public class UserInterface {
 
     private void displayAllEntries() {
         System.out.println("\n*********** All Entries ***********");
-        ArrayList<Transaction> transactions = ledger.getAllTransactions();
+        ArrayList<Transaction> transactionsList = transactionLedger.getAllTransactions();
 
-        if (transactions.isEmpty()) {
+        if (transactionsList.isEmpty()) {
             System.out.println("No transactions found.");
+            showPostTaskOptions("ledger");
             return;
         }
 
         System.out.println("Date       | Time     | Description                  | Vendor                 | Amount");
         System.out.println("-----------+----------+------------------------------+------------------------+------------");
 
-        for (int i = transactions.size() - 1; i >= 0; i--) {
-            Transaction t = transactions.get(i);
-            System.out.printf("%-10s | %-8s | %-28s | %-22s | $%+9.2f%n", t.getDate(), t.getTime().toString().substring(0, 8), limitString(t.getDescription(), 28), limitString(t.getVendor(), 22), t.getAmount());
+        for (int i = transactionsList.size() - 1; i >= 0; i--) {
+            Transaction transactionItem = transactionsList.get(i);
+            System.out.printf("%-10s | %-8s | %-28s | %-22s | $%+9.2f%n",
+                    transactionItem.getDate(),
+                    transactionItem.getTime().toString().substring(0, 8),
+                    limitString(transactionItem.getDescription(), 28),
+                    limitString(transactionItem.getVendor(), 22),
+                    transactionItem.getAmount());
         }
 
-        System.out.println("\nPress Enter to continue...");
-        scanner.nextLine();
+        showPostTaskOptions("ledger");
     }
 
     private void displayDeposits() {
         System.out.println("\n*********** Deposits ***********");
-        ArrayList<Transaction> deposits = ledger.getDeposits();
+        ArrayList<Transaction> depositsList = transactionLedger.getDeposits();
 
-        if (deposits.isEmpty()) {
+        if (depositsList.isEmpty()) {
             System.out.println("No deposits found.");
+            showPostTaskOptions("ledger");
             return;
         }
 
         System.out.println("Date       | Time     | Description                  | Vendor                 | Amount");
         System.out.println("-----------+----------+------------------------------+------------------------+------------");
 
-        for (int i = deposits.size() - 1; i >= 0; i--) {
-            Transaction t = deposits.get(i);
-            System.out.printf("%-10s | %-8s | %-28s | %-22s | $%9.2f%n", t.getDate(), t.getTime().toString().substring(0, 8), limitString(t.getDescription(), 28), limitString(t.getVendor(), 22), t.getAmount());
+        for (int i = depositsList.size() - 1; i >= 0; i--) {
+            Transaction transactionItem = depositsList.get(i);
+            System.out.printf("%-10s | %-8s | %-28s | %-22s | $%9.2f%n",
+                    transactionItem.getDate(),
+                    transactionItem.getTime().toString().substring(0, 8),
+                    limitString(transactionItem.getDescription(), 28),
+                    limitString(transactionItem.getVendor(), 22),
+                    transactionItem.getAmount());
         }
 
-        System.out.println("\nPress Enter to continue...");
-        scanner.nextLine();
+        showPostTaskOptions("ledger");
     }
 
     private void displayPayments() {
         System.out.println("\n*********** Payments ***********");
-        ArrayList<Transaction> payments = ledger.getPayments();
+        ArrayList<Transaction> paymentsList = transactionLedger.getPayments();
 
-        if (payments.isEmpty()) {
+        if (paymentsList.isEmpty()) {
             System.out.println("No payments found.");
+            showPostTaskOptions("ledger");
             return;
         }
 
         System.out.println("Date       | Time     | Description                  | Vendor                 | Amount");
         System.out.println("-----------+----------+------------------------------+------------------------+------------");
 
-        for (int i = payments.size() - 1; i >= 0; i--) {
-            Transaction t = payments.get(i);
-            System.out.printf("%-10s | %-8s | %-28s | %-22s | $%9.2f%n", t.getDate(), t.getTime().toString().substring(0, 8), limitString(t.getDescription(), 28), limitString(t.getVendor(), 22), t.getAmount());
+        for (int i = paymentsList.size() - 1; i >= 0; i--) {
+            Transaction transactionItem = paymentsList.get(i);
+            System.out.printf("%-10s | %-8s | %-28s | %-22s | $%9.2f%n",
+                    transactionItem.getDate(),
+                    transactionItem.getTime().toString().substring(0, 8),
+                    limitString(transactionItem.getDescription(), 28),
+                    limitString(transactionItem.getVendor(), 22),
+                    transactionItem.getAmount());
         }
 
-        System.out.println("\nPress Enter to continue...");
-        scanner.nextLine();
+        showPostTaskOptions("ledger");
     }
 
     // Part 4: Reports and Transaction Filtering
     private void displayReportsScreen() {
-        boolean viewingReports = true;
+        boolean isViewingReports = true;
 
-        while (viewingReports) {
+        while (isViewingReports) {
             System.out.println("\n*********** Reports ***********");
             System.out.println("1) Month To Date");
             System.out.println("2) Previous Month");
@@ -232,16 +257,16 @@ public class UserInterface {
             System.out.println("0) Back");
             System.out.print("Please select an option: ");
 
-            String choice = scanner.nextLine();
+            String userChoice = inputScanner.nextLine();
 
-            if (choice == null || choice.isEmpty()) {
+            if (userChoice == null || userChoice.isEmpty()) {
                 System.out.println("Please enter a selection.");
                 continue;
             }
 
-            choice = choice.trim();
+            userChoice = userChoice.trim();
 
-            switch (choice) {
+            switch (userChoice) {
                 case "1":
                     reportMonthToDate();
                     break;
@@ -258,7 +283,7 @@ public class UserInterface {
                     searchByVendor();
                     break;
                 case "0":
-                    viewingReports = false;
+                    isViewingReports = false;
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -266,96 +291,78 @@ public class UserInterface {
         }
     }
 
-    /**
-     * Shows transactions from the start of current month to today
-     * This is super useful for monthly budgeting - helps me track how I'm doing so far this month
-     * before all the bills come in at the end
-     */
+    // Methods for report generation
     private void reportMonthToDate() {
         System.out.println("\n*********** Month To Date Report ***********");
-        LocalDate today = LocalDate.now();
-        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
-        System.out.println("Period: " + firstDayOfMonth + " to " + today);
+        LocalDate currentDate = LocalDate.now();
+        LocalDate monthStartDate = currentDate.withDayOfMonth(1);
+        System.out.println("Period: " + monthStartDate + " to " + currentDate);
 
-        ArrayList<Transaction> transactions = ledger.getMonthToDateTransactions();
-        double total = ledger.calculateTotal(transactions);
+        ArrayList<Transaction> filteredTransactions = transactionLedger.getMonthToDateTransactions();
+        double totalAmount = transactionLedger.calculateTotal(filteredTransactions);
 
-        displayTransactionsWithTotal(transactions, total);
+        displayTransactionsWithTotal(filteredTransactions, totalAmount);
+        showPostTaskOptions("report");
     }
 
-    /**
-     * Shows transactions from previous month
-     * Great for reviewing last month's spending and planning for the current month
-     * I use this one all the time to compare my recurring expenses
-     */
     private void reportPreviousMonth() {
         YearMonth previousMonth = YearMonth.from(LocalDate.now()).minusMonths(1);
 
         System.out.println("\n*********** Previous Month Report ***********");
         System.out.println("Period: " + previousMonth.atDay(1) + " to " + previousMonth.atEndOfMonth());
 
-        ArrayList<Transaction> transactions = ledger.getPreviousMonthTransactions();
-        double total = ledger.calculateTotal(transactions);
+        ArrayList<Transaction> filteredTransactions = transactionLedger.getPreviousMonthTransactions();
+        double totalAmount = transactionLedger.calculateTotal(filteredTransactions);
 
-        displayTransactionsWithTotal(transactions, total);
+        displayTransactionsWithTotal(filteredTransactions, totalAmount);
+        showPostTaskOptions("report");
     }
 
-    /**
-     * Shows all transactions from the beginning of the year till now
-     * Really needed this for tax preparation - helps me see the bigger picture
-     * of yearly spending vs income
-     */
     private void reportYearToDate() {
         System.out.println("\n*********** Year To Date Report ***********");
-        LocalDate today = LocalDate.now();
-        LocalDate firstDayOfYear = today.withDayOfYear(1);
-        System.out.println("Period: " + firstDayOfYear + " to " + today);
+        LocalDate currentDate = LocalDate.now();
+        LocalDate yearStartDate = currentDate.withDayOfYear(1);
+        System.out.println("Period: " + yearStartDate + " to " + currentDate);
 
-        ArrayList<Transaction> transactions = ledger.getYearToDateTransactions();
-        double total = ledger.calculateTotal(transactions);
+        ArrayList<Transaction> filteredTransactions = transactionLedger.getYearToDateTransactions();
+        double totalAmount = transactionLedger.calculateTotal(filteredTransactions);
 
-        displayTransactionsWithTotal(transactions, total);
+        displayTransactionsWithTotal(filteredTransactions, totalAmount);
+        showPostTaskOptions("report");
     }
 
-    /**
-     * Shows transactions from previous calendar year
-     * Added this because my accountant kept asking for year-end reports
-     * Makes tax filing way easier when everything's in one place
-     */
     private void reportPreviousYear() {
         int previousYear = LocalDate.now().getYear() - 1;
 
         System.out.println("\n*********** Previous Year Report ***********");
         System.out.println("Period: " + LocalDate.of(previousYear, 1, 1) + " to " + LocalDate.of(previousYear, 12, 31));
 
-        ArrayList<Transaction> transactions = ledger.getPreviousYearTransactions();
-        double total = ledger.calculateTotal(transactions);
+        ArrayList<Transaction> filteredTransactions = transactionLedger.getPreviousYearTransactions();
+        double totalAmount = transactionLedger.calculateTotal(filteredTransactions);
 
-        displayTransactionsWithTotal(transactions, total);
+        displayTransactionsWithTotal(filteredTransactions, totalAmount);
+        showPostTaskOptions("report");
     }
 
-    /**
-     * Searches transactions by vendor name (case insensitive)
-     * I use this ALL THE TIME to find how much I've been spending at specific stores
-     * or to track down that one transaction I can't remember the date for
-     */
     private void searchByVendor() {
         System.out.println("\n*********** Vendor Search ***********");
 
         System.out.print("Enter vendor name to search: ");
-        String vendorSearch = scanner.nextLine().trim();
+        String searchVendorName = inputScanner.nextLine().trim();
 
-        if (vendorSearch.isEmpty()) {
+        if (searchVendorName.isEmpty()) {
             System.out.println("Search cancelled. Please enter a vendor name.");
+            showPostTaskOptions("search");
             return;
         }
 
-        System.out.println("\n*********** Search Results for: " + vendorSearch + " ***********");
+        System.out.println("\n*********** Search Results for: " + searchVendorName + " ***********");
 
-        ArrayList<Transaction> transactions = ledger.searchByVendor(vendorSearch);
-        double total = ledger.calculateTotal(transactions);
+        ArrayList<Transaction> searchResults = transactionLedger.searchByVendor(searchVendorName);
+        double totalAmount = transactionLedger.calculateTotal(searchResults);
 
-        displayTransactionsWithTotal(transactions, total);
+        displayTransactionsWithTotal(searchResults, totalAmount);
+        showPostTaskOptions("search");
     }
 
     /**
@@ -363,47 +370,134 @@ public class UserInterface {
      * Had to write this to avoid copying the same display code everywhere
      * Also calculates totals and gives a summary of whether you're making or losing money
      */
-    private void displayTransactionsWithTotal(ArrayList<Transaction> transactions, double total) {
-        if (transactions.isEmpty()) {
+    private void displayTransactionsWithTotal(ArrayList<Transaction> transactionsList, double totalAmount) {
+        if (transactionsList.isEmpty()) {
             System.out.println("No matching transactions found.");
-            System.out.println("\nPress Enter to continue...");
-            scanner.nextLine();
+            // Don't show post-task options here since each calling method will do that
             return;
         }
 
         System.out.println("Date       | Time     | Description                  | Vendor                 | Amount");
         System.out.println("-----------+----------+------------------------------+------------------------+------------");
 
-        for (int i = transactions.size() - 1; i >= 0; i--) {
-            Transaction t = transactions.get(i);
-            System.out.printf("%-10s | %-8s | %-28s | %-22s | $%+9.2f%n", t.getDate(), t.getTime().toString().substring(0, 8), limitString(t.getDescription(), 28), limitString(t.getVendor(), 22), t.getAmount());
+        for (int i = transactionsList.size() - 1; i >= 0; i--) {
+            Transaction transactionItem = transactionsList.get(i);
+            System.out.printf("%-10s | %-8s | %-28s | %-22s | $%+9.2f%n",
+                    transactionItem.getDate(),
+                    transactionItem.getTime().toString().substring(0, 8),
+                    limitString(transactionItem.getDescription(), 28),
+                    limitString(transactionItem.getVendor(), 22),
+                    transactionItem.getAmount());
         }
 
         System.out.println("-----------+----------+------------------------------+------------------------+------------");
-        System.out.printf("%52s | $%+9.2f%n", "Total", total);
+        System.out.printf("%52s | $%+9.2f%n", "Total", totalAmount);
 
-        if (total > 0) {
+        if (totalAmount > 0) {
             System.out.println("Summary: Net income is positive.");
-        } else if (total < 0) {
+        } else if (totalAmount < 0) {
             System.out.println("Summary: Net income is negative.");
         } else {
             System.out.println("Summary: Balanced budget.");
         }
-
-        System.out.println("\nPress Enter to continue...");
-        scanner.nextLine();
     }
 
     // Utility method to limit string length for display
-    private String limitString(String str, int maxLength) {
-        if (str == null) {
+    private String limitString(String textString, int maxLength) {
+        if (textString == null) {
             return "";
         }
 
-        if (str.length() <= maxLength) {
-            return str;
+        if (textString.length() <= maxLength) {
+            return textString;
         } else {
-            return str.substring(0, maxLength - 3) + "...";
+            return textString.substring(0, maxLength - 3) + "...";
+        }
+    }
+
+    // New method to display options after completing a task
+    private void showPostTaskOptions(String taskType) {
+        System.out.println("\n*********** What would you like to do next? ***********");
+
+        switch (taskType) {
+            case "deposit":
+                System.out.println("1) Add another deposit");
+                System.out.println("2) Return to Home screen");
+                break;
+            case "payment":
+                System.out.println("1) Make another payment");
+                System.out.println("2) Return to Home screen");
+                break;
+            case "report":
+                System.out.println("1) View another report");
+                System.out.println("2) Return to Reports menu");
+                System.out.println("3) Return to Ledger menu");
+                System.out.println("4) Return to Home screen");
+                break;
+            case "search":
+                System.out.println("1) Search for another vendor");
+                System.out.println("2) Return to Reports menu");
+                System.out.println("3) Return to Ledger menu");
+                System.out.println("4) Return to Home screen");
+                break;
+            case "ledger":
+                System.out.println("1) Return to Ledger menu");
+                System.out.println("2) Return to Home screen");
+                break;
+            default:
+                System.out.println("1) Continue");
+                System.out.println("2) Return to Home screen");
+        }
+
+        System.out.print("Enter your choice: ");
+        String userChoice = inputScanner.nextLine().trim();
+
+        switch (taskType) {
+            case "deposit":
+                if (userChoice.equals("1")) {
+                    addDeposit();
+                }
+                // For option 2 or any other input, just return to calling method which will go back to home
+                break;
+
+            case "payment":
+                if (userChoice.equals("1")) {
+                    makePayment();
+                }
+                // For option 2 or any other input, just return to calling method which will go back to home
+                break;
+
+            case "report":
+                if (userChoice.equals("1")) {
+                    displayReportsScreen();
+                } else if (userChoice.equals("2")) {
+                    // Just return to reports menu
+                } else if (userChoice.equals("3")) {
+                    displayLedgerScreen();
+                }
+                // For option 4 or any other input, just return to calling method which will go back to home
+                break;
+
+            case "search":
+                if (userChoice.equals("1")) {
+                    searchByVendor();
+                } else if (userChoice.equals("2")) {
+                    displayReportsScreen();
+                } else if (userChoice.equals("3")) {
+                    displayLedgerScreen();
+                }
+                // For option 4 or any other input, just return to calling method which will go back to home
+                break;
+
+            case "ledger":
+                if (userChoice.equals("1")) {
+                    // Just return to ledger menu
+                }
+                // For option 2 or any other input, just return to calling method which will go back to home
+                break;
+
+            default:
+                // Just continue with default flow
         }
     }
 }

@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Ledger {
-    private ArrayList<Transaction> transactions; // This class handles all our transaction data and makes it easy to work with
+    private ArrayList<Transaction> transactionsList; // This class handles all our transaction data and makes it easy to work with
     // Think of it like a filing cabinet that keeps all our money records organized
     // This stores all our transactions in one place
     public Ledger() {
-        this.transactions = FileManager.loadTransactions();  // When we create a new Ledger, it automatically loads saved transactions
+        this.transactionsList = FileManager.loadTransactions();  // When we create a new Ledger, it automatically loads saved transactions
     }
 
     // PART 1: BASIC TRANSACTION HANDLING
@@ -16,39 +16,39 @@ public class Ledger {
 
     // Just gives us back all transactions we have
     public ArrayList<Transaction> getAllTransactions() {
-        return transactions;
+        return transactionsList;
     }
 
     // This filters out just the money coming in (positive amounts)
     public ArrayList<Transaction> getDeposits() {
-        ArrayList<Transaction> deposits = new ArrayList<>();
+        ArrayList<Transaction> depositsList = new ArrayList<>();
 
-        for (Transaction transaction : transactions) {
-            if (transaction.getAmount() > 0) {
-                deposits.add(transaction);
+        for (Transaction transactionItem : transactionsList) {
+            if (transactionItem.getAmount() > 0) {
+                depositsList.add(transactionItem);
             }
         }
 
-        return deposits;
+        return depositsList;
     }
 
     // This filters out just the money going out (negative amounts)
     public ArrayList<Transaction> getPayments() {
-        ArrayList<Transaction> payments = new ArrayList<>();
+        ArrayList<Transaction> paymentsList = new ArrayList<>();
 
-        for (Transaction transaction : transactions) {
-            if (transaction.getAmount() < 0) {
-                payments.add(transaction);
+        for (Transaction transactionItem : transactionsList) {
+            if (transactionItem.getAmount() < 0) {
+                paymentsList.add(transactionItem);
             }
         }
 
-        return payments;
+        return paymentsList;
     }
 
     // This adds a new transaction to our list and saves it to the file
-    public void addTransaction(Transaction transaction) {
-        transactions.add(transaction);
-        FileManager.saveTransaction(transaction);
+    public void addTransaction(Transaction transactionItem) {
+        transactionsList.add(transactionItem);
+        FileManager.saveTransaction(transactionItem);
     }
 
     // PART 2: TIME-BASED FILTERING
@@ -57,77 +57,77 @@ public class Ledger {
 
     // Gets transactions from the start of this month until today
     public ArrayList<Transaction> getMonthToDateTransactions() {
-        ArrayList<Transaction> result = new ArrayList<>();
-        LocalDate today = LocalDate.now();
-        LocalDate firstDayOfMonth = LocalDate.of(today.getYear(), today.getMonth(), 1);
+        ArrayList<Transaction> filteredTransactions = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+        LocalDate monthStartDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), 1);
 
-        for (Transaction transaction : transactions) {
-            LocalDate transactionDate = transaction.getDate();
+        for (Transaction transactionItem : transactionsList) {
+            LocalDate transactionDate = transactionItem.getDate();
 
-            boolean isAfterStartDate = transactionDate.equals(firstDayOfMonth) || transactionDate.isAfter(firstDayOfMonth);
-            boolean isBeforeEndDate = transactionDate.equals(today) || transactionDate.isBefore(today);
+            boolean isAfterStartDate = transactionDate.equals(monthStartDate) || transactionDate.isAfter(monthStartDate);
+            boolean isBeforeEndDate = transactionDate.equals(currentDate) || transactionDate.isBefore(currentDate);
 
             if (isAfterStartDate && isBeforeEndDate) {
-                result.add(transaction);
+                filteredTransactions.add(transactionItem);
             }
         }
 
-        return result;
+        return filteredTransactions;
     }
 
     // Gets all transactions from last month
     public ArrayList<Transaction> getPreviousMonthTransactions() {
-        ArrayList<Transaction> result = new ArrayList<>();
+        ArrayList<Transaction> filteredTransactions = new ArrayList<>();
 
-        LocalDate today = LocalDate.now();
+        LocalDate currentDate = LocalDate.now();
 
-        int prevMonth = today.getMonthValue() - 1;
-        int year = today.getYear();
+        int previousMonth = currentDate.getMonthValue() - 1;
+        int yearValue = currentDate.getYear();
 
         // Handle if we're in January and need to go back to December of last year
-        if (prevMonth < 1) {
-            prevMonth = 12;
-            year = year - 1;
+        if (previousMonth < 1) {
+            previousMonth = 12;
+            yearValue = yearValue - 1;
         }
 
-        LocalDate firstDay = LocalDate.of(year, prevMonth, 1);
+        LocalDate startDate = LocalDate.of(yearValue, previousMonth, 1);
 
-        int lastDayOfMonth = firstDay.lengthOfMonth();
-        LocalDate lastDay = LocalDate.of(year, prevMonth, lastDayOfMonth);
+        int lastDayOfMonth = startDate.lengthOfMonth();
+        LocalDate endDate = LocalDate.of(yearValue, previousMonth, lastDayOfMonth);
 
-        for (Transaction transaction : transactions) {
-            LocalDate transactionDate = transaction.getDate();
+        for (Transaction transactionItem : transactionsList) {
+            LocalDate transactionDate = transactionItem.getDate();
 
-            boolean isAfterStartDate = transactionDate.equals(firstDay) || transactionDate.isAfter(firstDay);
-            boolean isBeforeEndDate = transactionDate.equals(lastDay) || transactionDate.isBefore(lastDay);
+            boolean isAfterStartDate = transactionDate.equals(startDate) || transactionDate.isAfter(startDate);
+            boolean isBeforeEndDate = transactionDate.equals(endDate) || transactionDate.isBefore(endDate);
 
             if (isAfterStartDate && isBeforeEndDate) {
-                result.add(transaction);
+                filteredTransactions.add(transactionItem);
             }
         }
 
-        return result;
+        return filteredTransactions;
     }
 
     // Gets transactions from January 1st of this year until today
     public ArrayList<Transaction> getYearToDateTransactions() {
-        ArrayList<Transaction> result = new ArrayList<>();
+        ArrayList<Transaction> filteredTransactions = new ArrayList<>();
 
-        LocalDate today = LocalDate.now();
-        LocalDate firstDayOfYear = LocalDate.of(today.getYear(), 1, 1);
+        LocalDate currentDate = LocalDate.now();
+        LocalDate yearStartDate = LocalDate.of(currentDate.getYear(), 1, 1);
 
-        for (Transaction transaction : transactions) {
-            LocalDate transactionDate = transaction.getDate();
+        for (Transaction transactionItem : transactionsList) {
+            LocalDate transactionDate = transactionItem.getDate();
 
-            boolean isAfterStartDate = transactionDate.equals(firstDayOfYear) || transactionDate.isAfter(firstDayOfYear);
-            boolean isBeforeEndDate = transactionDate.equals(today) || transactionDate.isBefore(today);
+            boolean isAfterStartDate = transactionDate.equals(yearStartDate) || transactionDate.isAfter(yearStartDate);
+            boolean isBeforeEndDate = transactionDate.equals(currentDate) || transactionDate.isBefore(currentDate);
 
             if (isAfterStartDate && isBeforeEndDate) {
-                result.add(transaction);
+                filteredTransactions.add(transactionItem);
             }
         }
 
-        return result;
+        return filteredTransactions;
     }
 
     // PART 3: FILTERING AND CALCULATIONS
@@ -136,60 +136,60 @@ public class Ledger {
 
     // Gets all transactions from last year
     public ArrayList<Transaction> getPreviousYearTransactions() {
-        ArrayList<Transaction> result = new ArrayList<>();
+        ArrayList<Transaction> filteredTransactions = new ArrayList<>();
 
         int previousYear = LocalDate.now().getYear() - 1;
-        LocalDate firstDay = LocalDate.of(previousYear, 1, 1);
-        LocalDate lastDay = LocalDate.of(previousYear, 12, 31);
+        LocalDate startDate = LocalDate.of(previousYear, 1, 1);
+        LocalDate endDate = LocalDate.of(previousYear, 12, 31);
 
-        for (Transaction transaction : transactions) {
-            LocalDate transactionDate = transaction.getDate();
+        for (Transaction transactionItem : transactionsList) {
+            LocalDate transactionDate = transactionItem.getDate();
 
-            boolean isAfterStartDate = transactionDate.equals(firstDay) || transactionDate.isAfter(firstDay);
-            boolean isBeforeEndDate = transactionDate.equals(lastDay) || transactionDate.isBefore(lastDay);
+            boolean isAfterStartDate = transactionDate.equals(startDate) || transactionDate.isAfter(startDate);
+            boolean isBeforeEndDate = transactionDate.equals(endDate) || transactionDate.isBefore(endDate);
 
             if (isAfterStartDate && isBeforeEndDate) {
-                result.add(transaction);
+                filteredTransactions.add(transactionItem);
             }
         }
 
-        return result;
+        return filteredTransactions;
     }
 
     // Lets you search for transactions with a specific vendor
     // Like finding all your Amazon purchases or coffee shop visits
-    public ArrayList<Transaction> searchByVendor(String vendorName) {
-        ArrayList<Transaction> result = new ArrayList<>();
+    public ArrayList<Transaction> searchByVendor(String searchVendorName) {
+        ArrayList<Transaction> searchResults = new ArrayList<>();
 
         // Don't bother searching if they didn't enter anything
-        if (vendorName == null || vendorName.trim().equals("")) {
-            return result;
+        if (searchVendorName == null || searchVendorName.trim().equals("")) {
+            return searchResults;
         }
 
         // Make the search work regardless of uppercase/lowercase letters
-        String searchTerm = vendorName.trim().toLowerCase();
+        String searchTerm = searchVendorName.trim().toLowerCase();
 
-        for (Transaction transaction : transactions) {
-            String vendor = transaction.getVendor().toLowerCase();
+        for (Transaction transactionItem : transactionsList) {
+            String vendorName = transactionItem.getVendor().toLowerCase();
 
             // Check if this transaction's vendor contains what we're looking for
-            if (vendor.contains(searchTerm)) {
-                result.add(transaction);
+            if (vendorName.contains(searchTerm)) {
+                searchResults.add(transactionItem);
             }
         }
 
-        return result;
+        return searchResults;
     }
 
     // Adds up the total amount for any list of transactions
     // Useful for seeing your overall balance or spending in a category
     public double calculateTotal(ArrayList<Transaction> transactionList) {
-        double total = 0;
+        double totalAmount = 0;
 
-        for (Transaction transaction : transactionList) {
-            total += transaction.getAmount();
+        for (Transaction transactionItem : transactionList) {
+            totalAmount += transactionItem.getAmount();
         }
 
-        return total;
+        return totalAmount;
     }
 }

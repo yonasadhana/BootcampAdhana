@@ -2,45 +2,49 @@ package com.accountingledger;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class Transaction {
-    private LocalDate date;
-    private LocalTime time;
-    private String description;
-    private String vendor;
-    private double amount;
+    private LocalDate transactionDate;
+    private LocalTime transactionTime;
+    private String transactionDescription;
+    private String vendorName;
+    private double transactionAmount;
+    // Create a formatter to display time without nanoseconds
+    private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    public Transaction(LocalDate date, LocalTime time, String description, String vendor, double amount) {
-        this.date = date;
-        this.time = time;
-        this.description = description;
-        this.vendor = vendor;
-        this.amount = amount;
+    public Transaction(LocalDate transactionDate, LocalTime transactionTime, String transactionDescription, String vendorName, double transactionAmount) {
+        this.transactionDate = transactionDate;
+        this.transactionTime = transactionTime;
+        this.transactionDescription = transactionDescription;
+        this.vendorName = vendorName;
+        this.transactionAmount = transactionAmount;
     }
 
-
     public LocalDate getDate() {
-        return date;
+        return transactionDate;
     }
 
     public LocalTime getTime() {
-        return time;
+        return transactionTime;
     }
 
     public String getDescription() {
-        return description;
+        return transactionDescription;
     }
 
     public String getVendor() {
-        return vendor;
+        return vendorName;
     }
 
     public double getAmount() {
-        return amount;
+        return transactionAmount;
     }
 
     @Override
     public String toString() {
-        return String.format("%s|%s|%s|%s|%.2f", date.toString(), time.toString(), description, vendor, amount);
+        // Format time using the formatter to get HH:mm:ss
+        String formattedTime = transactionTime.format(timeFormatter);
+        return String.format("%s|%s|%s|%s|%.2f", transactionDate.toString(), formattedTime, transactionDescription, vendorName, transactionAmount);
     }
 }
