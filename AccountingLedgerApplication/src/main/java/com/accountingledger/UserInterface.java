@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 /**
  * UserInterface Class
- *
  * This class manages all user interactions for the Accounting Ledger application.
  * It provides menu displays, handles user input, and coordinates with the Ledger
  * class to perform financial transactions and generate reports.
@@ -23,7 +22,6 @@ public class UserInterface {
 
     /**
      * HOME SCREEN
-     *
      * Displays the main menu of the application and processes user selections.
      * This is the entry point of the application where users can:
      * - Add deposits
@@ -69,7 +67,6 @@ public class UserInterface {
 
     /**
      * TRANSACTION ENTRY: ADD DEPOSIT
-     *
      * Collects information from the user to create a new deposit transaction.
      * Gathers description, vendor, and positive amount from the user.
      * Adds the transaction to the ledger with current date and time.
@@ -114,7 +111,6 @@ public class UserInterface {
 
     /**
      * TRANSACTION ENTRY: MAKE PAYMENT
-     *
      * Collects information from the user to create a new payment transaction.
      * Gathers description, vendor, and positive amount from the user.
      * Converts the amount to negative before storing.
@@ -162,7 +158,6 @@ public class UserInterface {
 
     /**
      * LEDGER MENU
-     *
      * Displays the ledger options menu and processes user selections.
      * Provides access to different views of transaction data:
      * - All transactions
@@ -210,7 +205,6 @@ public class UserInterface {
 
     /**
      * LEDGER VIEW: ALL ENTRIES
-     *
      * Displays a complete list of all financial transactions in the ledger.
      * Shows transactions in reverse chronological order (newest first).
      * Includes deposits and payments in a single view.
@@ -234,7 +228,6 @@ public class UserInterface {
 
     /**
      * LEDGER VIEW: DEPOSITS ONLY
-     *
      * Displays only deposit transactions (positive amounts).
      * Shows transactions in reverse chronological order (newest first).
      * Useful for tracking income sources.
@@ -258,7 +251,6 @@ public class UserInterface {
 
     /**
      * LEDGER VIEW: PAYMENTS ONLY
-     *
      * Displays only payment transactions (negative amounts).
      * Shows transactions in reverse chronological order (newest first).
      * Useful for tracking expenses.
@@ -282,7 +274,6 @@ public class UserInterface {
 
     /**
      * TRANSACTION DISPLAY HELPER
-     *
      * Formats and displays a list of transactions in a tabular format.
      * Handles text wrapping for long descriptions over multiple lines.
      * Shows date, time, description, vendor, and amount in aligned columns.
@@ -328,7 +319,6 @@ public class UserInterface {
 
     /**
      * REPORTS MENU
-     *
      * Displays the reporting options menu and processes user selections.
      * Provides access to various financial reports:
      * - Month-to-date transactions
@@ -382,7 +372,6 @@ public class UserInterface {
 
     /**
      * REPORT: MONTH TO DATE
-     *
      * Generates a financial report for the current month.
      * Shows all transactions from the beginning of the current month to today.
      * Displays transaction details and calculated totals.
@@ -406,7 +395,6 @@ public class UserInterface {
 
     /**
      * REPORT: PREVIOUS MONTH
-     *
      * Generates a financial report for the previous calendar month.
      * Shows all transactions from the previous month.
      * Displays transaction details and calculated totals.
@@ -430,7 +418,6 @@ public class UserInterface {
 
     /**
      * REPORT: YEAR TO DATE
-     *
      * Generates a financial report for the current year.
      * Shows all transactions from January 1st to today.
      * Displays transaction details and calculated totals.
@@ -454,7 +441,6 @@ public class UserInterface {
 
     /**
      * REPORT: PREVIOUS YEAR
-     *
      * Generates a financial report for the previous calendar year.
      * Shows all transactions from the previous year.
      * Displays transaction details and calculated totals.
@@ -478,7 +464,6 @@ public class UserInterface {
 
     /**
      * SEARCH: BY VENDOR
-     *
      * Allows searching for transactions by vendor name.
      * Prompts user for a vendor name to search for.
      * Displays matching transactions and calculates totals.
@@ -512,7 +497,6 @@ public class UserInterface {
 
     /**
      * TRANSACTION DISPLAY WITH TOTALS
-     *
      * Displays a list of transactions with calculated totals.
      * Shows transaction details in a tabular format.
      * Adds a summary row with the net total of all transactions.
@@ -538,7 +522,6 @@ public class UserInterface {
 
     /**
      * TEXT TRUNCATION UTILITY
-     *
      * Limits a string to a maximum length and adds ellipsis if needed.
      * Used primarily for displaying search headers with potentially long vendor names.
      */
@@ -556,14 +539,13 @@ public class UserInterface {
 
     /**
      * NAVIGATION: POST-TASK OPTIONS
-     *
      * Displays a menu of navigation options after completing a task.
      * Different options are shown based on the task type:
      * - After deposits or payments: options to add more or return home
      * - After reports: options to view more reports or navigate to other menus
      * - After searches: options to search again or navigate to other menus
      * - After ledger views: options to view more data or return home
-     *
+
      * Handles the user's choice and redirects to the appropriate screen.
      */
     private void showPostTaskOptions(String taskType) {

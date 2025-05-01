@@ -69,8 +69,7 @@ public class FileManager {
                         String vendorName = dataParts[3];
                         double transactionAmount = Double.parseDouble(dataParts[4]);
 
-                        Transaction transaction = new Transaction(transactionDate, transactionTime,
-                                transactionDescription, vendorName, transactionAmount);
+                        Transaction transaction = new Transaction(transactionDate, transactionTime, transactionDescription, vendorName, transactionAmount);
                         transactionsList.add(transaction);
                     }
                 } catch (Exception parseException) {

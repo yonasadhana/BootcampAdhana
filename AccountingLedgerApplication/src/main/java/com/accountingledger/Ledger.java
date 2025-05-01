@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Ledger {
     private ArrayList<Transaction> transactionsList; // This class handles all our transaction data and makes it easy to work with
+
     // Think of it like a filing cabinet that keeps all our money records organized
     // This stores all our transactions in one place
     public Ledger() {
