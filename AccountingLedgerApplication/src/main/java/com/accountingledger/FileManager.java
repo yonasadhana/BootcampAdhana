@@ -53,8 +53,10 @@ public class FileManager {
             }
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
-            String line = reader.readLine();
+            // Skip the header line
+            reader.readLine();
 
+            String line;
             while ((line = reader.readLine()) != null) {
                 try {
                     String[] parts = line.split("\\|");
