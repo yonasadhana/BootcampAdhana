@@ -4,21 +4,25 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class UserInterface {
     private Dealership dealership;
-    private Scanner scanner = new Scanner(System.in);
-    private DealershipFileManager fileManager;
-    private ContractFileManager contractManager;
+    private final Scanner scanner = new Scanner(System.in);
+    private final DealershipFileManager fileManager;
+    private final ContractFileManager contractManager;
+    private final AddOnManager addOnManager;
 
     public UserInterface() {
         fileManager = new DealershipFileManager();
         contractManager = new ContractFileManager();
+        addOnManager = new AddOnManager();
     }
 
     public UserInterface(String dealershipFilePath, String contractFilePath) {
         fileManager = new DealershipFileManager(dealershipFilePath);
         contractManager = new ContractFileManager(contractFilePath);
+        addOnManager = new AddOnManager();
     }
 
     private void init() {
@@ -74,6 +78,9 @@ public class UserInterface {
                 case 10:
                     processSellLeaseVehicleRequest();
                     break;
+                case 11:
+                    processAdminRequest();
+                    break;
                 case 99:
                     exit = true;
                     System.out.println("Thank you for using the Dealership App. Goodbye!");
@@ -104,6 +111,7 @@ public class UserInterface {
         System.out.println("8 - Add a vehicle");
         System.out.println("9 - Remove a vehicle");
         System.out.println("10 - Sell/Lease a vehicle");
+        System.out.println("11 - Admin");
         System.out.println("99 - Quit");
     }
 
@@ -368,7 +376,11 @@ public class UserInterface {
                 String financeOption = scanner.nextLine().trim().toUpperCase();
                 boolean finance = financeOption.equals("Y");
 
-                contract = new SalesContract(date, customerName, customerEmail, vehicle, finance);
+                SalesContract salesContract = new SalesContract(date, customerName, customerEmail, vehicle, finance);
+
+                offerAddOns(salesContract);
+
+                contract = salesContract;
 
             } else {
                 System.out.println("Invalid contract type. Please try again.");
@@ -380,6 +392,22 @@ public class UserInterface {
             System.out.println("Vehicle: " + contract.getVehicle().getYear() + " " +
                     contract.getVehicle().getMake() + " " +
                     contract.getVehicle().getModel());
+
+            if (contract instanceof SalesContract) {
+                SalesContract salesContract = (SalesContract) contract;
+                List<AddOn> addOns = salesContract.getAddOns();
+
+                if (!addOns.isEmpty()) {
+                    System.out.println("\nSelected Add-ons:");
+                    for (AddOn addOn : addOns) {
+                        System.out.println("- " + addOn.getName() + ": $" +
+                                String.format("%.2f", addOn.getPrice()));
+                    }
+                    System.out.println("Add-ons Total: $" +
+                            String.format("%.2f", salesContract.getAddOnsPrice()));
+                }
+            }
+
             System.out.println("Total Price: $" + String.format("%.2f", contract.getTotalPrice()));
             System.out.println("Monthly Payment: $" + String.format("%.2f", contract.getMonthlyPayment()));
 
@@ -400,6 +428,58 @@ public class UserInterface {
             System.out.println("Error: Please enter a valid number - " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Error processing contract: " + e.getMessage());
+        }
+    }
+
+    private void offerAddOns(SalesContract contract) {
+        System.out.println("\nWould you like to add any of the following add-ons to your purchase?");
+
+        List<AddOn> availableAddOns = addOnManager.getAvailableAddOns();
+        for (int i = 0; i < availableAddOns.size(); i++) {
+            AddOn addOn = availableAddOns.get(i);
+            System.out.println((i + 1) + ". " + addOn.getName() + " - $" +
+                    String.format("%.2f", addOn.getPrice()));
+            System.out.println("   " + addOn.getDescription());
+        }
+
+        System.out.println("0. Done selecting add-ons");
+
+        boolean done = false;
+        while (!done) {
+            System.out.print("\nSelect an add-on (0 to finish): ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            if (choice == 0) {
+                done = true;
+            } else if (choice >= 1 && choice <= availableAddOns.size()) {
+                AddOn selectedAddOn = availableAddOns.get(choice - 1);
+                contract.addAddOn(selectedAddOn);
+                System.out.println("Added: " + selectedAddOn.getName());
+            } else {
+                System.out.println("Invalid choice. Please try again.");
+            }
+        }
+
+        if (!contract.getAddOns().isEmpty()) {
+            System.out.println("\nSelected Add-ons:");
+            for (AddOn addOn : contract.getAddOns()) {
+                System.out.println("- " + addOn.getName() + ": $" +
+                        String.format("%.2f", addOn.getPrice()));
+            }
+            System.out.println("Add-ons Total: $" +
+                    String.format("%.2f", contract.getAddOnsPrice()));
+        }
+    }
+
+    private void processAdminRequest() {
+        AdminUserInterface adminUI = new AdminUserInterface(scanner, contractManager);
+
+        if (adminUI.authenticate()) {
+            System.out.println("Authentication successful!");
+            adminUI.display();
+        } else {
+            System.out.println("Authentication failed. Access denied.");
         }
     }
 }

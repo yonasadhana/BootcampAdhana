@@ -1,10 +1,14 @@
 package com.yoninaldo.dealership;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SalesContract extends Contract {
     private double salesTaxAmount;
     private double recordingFee;
     private double processingFee;
     private boolean finance;
+    private List<AddOn> addOns;
 
     public SalesContract(String date, String customerName, String customerEmail,
                          Vehicle vehicle, boolean finance) {
@@ -13,6 +17,7 @@ public class SalesContract extends Contract {
         this.recordingFee = 100.0;
         this.processingFee = vehicle.getPrice() < 10000 ? 295.0 : 495.0;
         this.finance = finance;
+        this.addOns = new ArrayList<>();
     }
 
     public double getSalesTaxAmount() {
@@ -47,9 +52,25 @@ public class SalesContract extends Contract {
         this.finance = finance;
     }
 
+    public List<AddOn> getAddOns() {
+        return new ArrayList<>(addOns);
+    }
+
+    public void addAddOn(AddOn addOn) {
+        this.addOns.add(addOn);
+    }
+
+    public double getAddOnsPrice() {
+        double total = 0.0;
+        for (AddOn addOn : addOns) {
+            total += addOn.getPrice();
+        }
+        return total;
+    }
+
     @Override
     public double getTotalPrice() {
-        return getVehicle().getPrice() + salesTaxAmount + recordingFee + processingFee;
+        return getVehicle().getPrice() + salesTaxAmount + recordingFee + processingFee + getAddOnsPrice();
     }
 
     @Override
