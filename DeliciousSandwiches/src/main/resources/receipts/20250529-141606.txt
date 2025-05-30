@@ -1,0 +1,21 @@
+==================================================
+           DELI-cious Receipt
+==================================================
+Order Date: 2025-05-29 14:16:06
+--------------------------------------------------
+
+Small Lemonade
+Price: $2.00
+
+8" Wheat sandwich (toasted)
+  Meats: Ham, Salami
+  Cheese: American
+  Vegetables: Lettuce, Tomatoes, Cucumbers, Guacamole
+  Sauces: Mayo, Mustard, Ranch, Thousand Islands, Vinaigrette
+Price: $12.50
+
+--------------------------------------------------
+TOTAL: $14.50
+==================================================
+
+Thank you for your order!
